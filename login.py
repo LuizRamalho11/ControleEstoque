@@ -22,7 +22,7 @@ def salvar_usuarios(user):
     
 # === função para autenticar (fazer login) === 
 def autenticar_usuarios(user, password):
-    usuarios = carregar_usuarios()  # carreaga todos os usuários
+    usuarios = carregar_usuarios()  # carrega todos os usuários
     for u in usuarios:  # percorre cada usuário na lista
         if u['usuario'] == user and u['senha'] == password: # verifica o usuário e senha
             return True
@@ -68,7 +68,7 @@ entrada_usuario = ctk.CTkEntry(janela, placeholder_text='Digite o seu usuário')
 
 # campo de entrada da senha do usuário
 senha = ctk.CTkLabel(janela, text='Senha:')
-entrada_senha = ctk.CTkEntry(janela, placeholder_text='Digite a sua senha', show='*')
+entrada_senha = ctk.CTkEntry(janela, placeholder_text='Digite a sua senha', show='●')
 
 # botões de ação de login e cadastro
 login_button = ctk.CTkButton(janela, text='Login', command=login)
