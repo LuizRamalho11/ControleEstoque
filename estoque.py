@@ -1,9 +1,11 @@
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
+from openpyxl import load_workbook, Workbook
 import json
 import os
 
 arquivo_estoque = 'banco.json'
+arquivo_excel = 'estoque.xlsx'
 
 def carregar_produtos():
     if os.path.exists(arquivo_estoque):
@@ -18,6 +20,14 @@ def salvar_produto(produtos):
     with open(arquivo_estoque, 'w') as a:
         json.dump(produtos, a, indent=4)
 
+def criar_arquivo_excel():
+    if not os.path.exists(arquivo_excel):
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'Estoque'
+        ws.append(['Código', 'Nome', 'Categoria', 'Quantidade', 'Preço'])
+        wb.save(arquivo_excel)
+
 def limpar_campos():
     entrada_codigo.delete(0, 'end')
     entrada_nome.delete(0, 'end')
@@ -26,7 +36,42 @@ def limpar_campos():
     entrada_preco.delete(0, 'end')
 
 def adicionar_produto():
-    limpar_campos
+    criar_arquivo_excel()
+    codigo = entrada_codigo.get()
+    nome = entrada_nome.get()
+    categoria = entrada_categoria.get()
+    quantidade = entrada_quantidade.get()
+    preco = entrada_preco.get()
+
+    if not all([codigo, nome, categoria, quantidade, preco]):
+        CTkMessagebox(title='ERRO', message='Preencha todos os campos!', icon='cancel')
+        return
+
+    try:
+        quantidade = int(quantidade)
+        preco = entrada_preco.get().replace(',', '.')
+        preco = float(preco)
+    except ValueError:
+        CTkMessagebox(title='ERRO', message='Quantidade e preço devem ser numéricos!')
+        return
+
+    produtos = carregar_produtos()
+    produtos.append({
+        'codigo': codigo,
+        'nome': nome,
+        'categoria': categoria,
+        'quantidade': quantidade,
+        'preco': preco
+    })
+    salvar_produto(produtos)
+
+    wb = load_workbook(arquivo_excel)
+    ws = wb.active
+    ws.append([codigo, nome, categoria, quantidade, preco])
+    wb.save(arquivo_excel)
+
+    CTkMessagebox(title='Sucesso', message='Produto adicionado com sucesso!', icon='check')
+    limpar_campos()
         
 def remover_produto():
     pass
